@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Tạo Mã QR Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="https://img.icons8.com/fluency/48/source-code.png">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .qr-transition {
+            transition: all 0.3s ease;
+        }
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Trình Tạo Mã QR Code</h1>
+            <p class="text-xl text-white opacity-90">Tạo mã QR code tùy chỉnh cho URL, văn bản, thông tin liên hệ và nhiều hơn nữa</p>
+        </header>
+
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="md:flex">
+                <!-- Input Section -->
+                <div class="md:w-1/2 p-8">
+                    <div class="mb-6">
+                        <label for="data" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-pencil-alt mr-2"></i>Nội dung QR Code *
+                        </label>
+                        <textarea 
+                            id="data" 
+                            rows="5" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition" 
+                            placeholder="Nhập URL, văn bản hoặc thông tin..." 
+                            required
+                        >https://github.com</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="size" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-expand-alt mr-2"></i>Kích thước (px)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="size" 
+                                value="300" 
+                                min="100" 
+                                max="1000" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            >
+                        </div>
+                        <div>
+                            <label for="format" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-file-image mr-2"></i>Định dạng
+                            </label>
+                            <select 
+                                id="format" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            >
+                                <option value="png">PNG</option>
+                                <option value="gif">GIF</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="svg">SVG</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-palette mr-2"></i>Màu mã QR
+                            </label>
+                            <input 
+                                type="color" 
+                                id="color" 
+                                value="#000000" 
+                                class="w-full h-12 px-1 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            >
+                        </div>
+                        <div>
+                            <label for="bgcolor" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-fill mr-2"></i>Màu nền
+                            </label>
+                            <input 
+                                type="color" 
+                                id="bgcolor" 
+                                value="#ffffff" 
+                                class="w-full h-12 px-1 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label for="margin" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-border-all mr-2"></i>Khoảng cách viền
+                            </label>
+                            <input 
+                                type="number" 
+                                id="margin" 
+                                value="1" 
+                                min="0" 
+                                max="10" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            >
+                        </div>
+                        <div>
+                            <label for="ecc" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-shield-alt mr-2"></i>Mức độ sửa lỗi
+                            </label>
+                            <select 
+                                id="ecc" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            >
+                                <option value="L">L - Thấp (7%)</option>
+                                <option value="M" selected>M - Trung bình (15%)</option>
+                                <option value="Q">Q - Khá (25%)</option>
+                                <option value="H">H - Cao (30%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button 
+                        id="generate-btn" 
+                        class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center"
+                    >
+                        <i class="fas fa-qrcode mr-2"></i> Tạo Mã QR
+                    </button>
+                    
+                    <div id="error" class="mt-4 text-red-600 text-center hidden">
+                        <i class="fas fa-exclamation-circle mr-2"></i>Vui lòng nhập nội dung cho mã QR
+                    </div>
+                </div>
+
+                <!-- Output Section -->
+                <div class="md:w-1/2 bg-gradient-to-br from-primary-50 to-primary-100 p-8 flex flex-col items-center justify-center">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                        <i class="fas fa-qrcode mr-2"></i>Mã QR Code của bạn
+                    </h2>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-xs mb-6">
+                        <div class="qr-transition" id="qrcode-container">
+                            <img 
+                                id="qrcode" 
+                                src="" 
+                                alt="QR Code" 
+                                class="w-full h-auto fade-in"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="text-center text-gray-600 mb-6">
+                        <p class="text-sm">Mã QR của bạn sẽ xuất hiện ở đây</p>
+                        <p class="text-xs mt-2">Tùy chỉnh các thiết lập và nhấn "Tạo Mã QR"</p>
+                    </div>
+                    
+                    <a 
+                        id="download-btn" target="blank" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition flex items-center justify-center hidden"
+                    >
+                        <i class="fas fa-download mr-2"></i> Tải Xuống
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 text-center text-white opacity-80">
+            <p>Ứng dụng sử dụng API từ <a href="https://goqr.me/api/" class="underline" target="_blank">goqr.me</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generate-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const errorDiv = document.getElementById('error');
+            const qrcodeImg = document.getElementById('qrcode');
+            const qrcodeContainer = document.getElementById('qrcode-container');
+            
+            generateBtn.addEventListener('click', generateQRCode);
+            
+            function generateQRCode() {
+                const data = document.getElementById('data').value.trim();
+                const size = document.getElementById('size').value;
+                const color = document.getElementById('color').value.substring(1); // Remove # 
+                const bgcolor = document.getElementById('bgcolor').value.substring(1); // Remove #
+                const margin = document.getElementById('margin').value;
+                const ecc = document.getElementById('ecc').value;
+                const format = document.getElementById('format').value;
+                
+                // Validate input
+                if (!data) {
+                    errorDiv.classList.remove('hidden');
+                    qrcodeContainer.classList.add('animate-pulse-slow');
+                    return;
+                }
+                
+                errorDiv.classList.add('hidden');
+                qrcodeContainer.classList.remove('animate-pulse-slow');
+                
+                // Create API URL
+                let apiUrl = `https://api.qrserver.com/v1/create-qr-code/`;
+                apiUrl += `?data=${encodeURIComponent(data)}`;
+                apiUrl += `&size=${size}x${size}`;
+                apiUrl += `&color=${color}`;
+                apiUrl += `&bgcolor=${bgcolor}`;
+                apiUrl += `&margin=${margin}`;
+                apiUrl += `&ecc=${ecc}`;
+                apiUrl += `&format=${format}`;
+                
+                // Add cache busting to prevent browser caching
+                apiUrl += `&t=${new Date().getTime()}`;
+                
+                // Display QR code
+                qrcodeImg.src = apiUrl;
+                qrcodeImg.alt = "QR Code";
+                qrcodeImg.classList.add('fade-in');
+                
+                // Setup download button
+                downloadBtn.href = apiUrl;
+                downloadBtn.download = `qrcode.${format}`;
+                downloadBtn.classList.remove('hidden');
+                
+                // Remove animation after it completes
+                setTimeout(() => {
+                    qrcodeImg.classList.remove('fade-in');
+                }, 500);
+            }
+            
+            // Generate QR code on page load
+            generateQRCode();
+            
+            // Add event listeners for real-time updates on some inputs
+            document.getElementById('color').addEventListener('change', generateQRCode);
+            document.getElementById('bgcolor').addEventListener('change', generateQRCode);
+            document.getElementById('ecc').addEventListener('change', generateQRCode);
+            document.getElementById('format').addEventListener('change', generateQRCode);
+        });
+    </script>
+</body>
+</html>
